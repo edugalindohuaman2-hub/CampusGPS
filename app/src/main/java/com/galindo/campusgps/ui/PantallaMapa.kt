@@ -20,6 +20,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -34,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.galindo.campusgps.model.UbicacionUi
+import com.galindo.campusgps.util.formatearDistancia
 import com.galindo.campusgps.viewmodel.MapaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,6 +48,7 @@ fun PantallaMapa(
     val estado by vm.estado.collectAsState()
     val lugares by vm.lugares.collectAsState()
     val seleccionado by vm.seleccionado.collectAsState()
+    val masCercano by vm.masCercano.collectAsState()
 
     val lanzador = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -109,6 +112,24 @@ fun PantallaMapa(
                 Text("Obtener mi ubicación")
             }
 
+            OutlinedButton(
+                onClick = {
+                    masCercano?.let { vm.seleccionar(it.id) }
+                },
+                enabled = masCercano != null
+            ) {
+                Text("Ir al más cercano")
+            }
+
+            if (masCercano != null) {
+                val lugarDist = lugares.firstOrNull { it.lugar.id == masCercano?.id }
+                val textoDist = lugarDist?.metros?.let { formatearDistancia(it) } ?: ""
+                Text(
+                    text = "Más cercano: ${masCercano?.nombre} ($textoDist)",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
             when (val actualState = estado) {
                 is UbicacionUi.Inicial -> {
                     Text(
@@ -162,6 +183,7 @@ fun PantallaMapa(
                 estado = estado,
                 lugares = lugares,
                 seleccionado = seleccionado,
+                masCercano = masCercano,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
