@@ -49,40 +49,38 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaMapa(
-    viewModel: MapaViewModel,
+    vm: MapaViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val estado by viewModel.estado.collectAsState()
-    val lugares by viewModel.lugares.collectAsState()
-    val seleccionado by viewModel.seleccionado.collectAsState()
+    val estado by vm.estado.collectAsState()
+    val lugares by vm.lugares.collectAsState()
+    val seleccionado by vm.seleccionado.collectAsState()
 
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val lanzador = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-        if (fineGranted || coarseGranted) {
-            viewModel.buscar()
+    ) { permisos ->
+        if (permisos.values.any { it }) {
+            vm.buscar()
         } else {
-            viewModel.permisoDenegado()
+            vm.permisoDenegado()
         }
     }
 
-    val onRequestLocation = {
-        val hasFine = ContextCompat.checkSelfPermission(
+    fun alPulsar() {
+        val tieneFine = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-        val hasCoarse = ContextCompat.checkSelfPermission(
+        val tieneCoarse = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (hasFine || hasCoarse) {
-            viewModel.buscar()
+        if (tieneFine || tieneCoarse) {
+            vm.buscar()
         } else {
-            permissionLauncher.launch(
+            lanzador.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
@@ -112,7 +110,8 @@ fun PantallaMapa(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(
-                onClick = { onRequestLocation() },
+                onClick = { alPulsar() },
+                enabled = estado !is UbicacionUi.Buscando,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF1976D2)
                 )
@@ -218,7 +217,7 @@ fun PantallaMapa(
                     ItemLugar(
                         lugarDist = lugarDist,
                         isSelected = seleccionado == lugarDist,
-                        onClick = { viewModel.seleccionarLugar(lugarDist) }
+                        onClick = { vm.seleccionarLugar(lugarDist) }
                     )
                 }
             }
