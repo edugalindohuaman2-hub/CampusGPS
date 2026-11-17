@@ -2,10 +2,12 @@ package com.galindo.campusgps.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.galindo.campusgps.model.LugarConDistancia
 import com.galindo.campusgps.model.UbicacionUi
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -37,15 +39,17 @@ fun MapaUbicacion(
         modifier = modifier,
         cameraPositionState = cameraPositionState
     ) {
-        lugares.forEach { lugarDist ->
-            val esSeleccionado = lugarDist.lugar.id == seleccionado
-            Marker(
-                state = rememberUpdatedMarkerState(
-                    position = LatLng(lugarDist.lugar.latitud, lugarDist.lugar.longitud)
-                ),
-                title = lugarDist.lugar.nombre + if (esSeleccionado) " (Seleccionado)" else "",
-                snippet = lugarDist.lugar.categoria + (lugarDist.metros?.let { " - ${it.toInt()}m" } ?: "")
-            )
+        lugares.forEach { item ->
+            key(item.lugar.id) {
+                Marker(
+                    state = rememberUpdatedMarkerState(
+                        position = LatLng(item.lugar.latitud, item.lugar.longitud)
+                    ),
+                    title = item.lugar.nombre,
+                    snippet = item.lugar.categoria,
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                )
+            }
         }
 
         if (estado is UbicacionUi.Lista) {
