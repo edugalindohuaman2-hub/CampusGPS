@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,12 +38,6 @@ import androidx.core.content.ContextCompat
 import com.galindo.campusgps.model.LugarConDistancia
 import com.galindo.campusgps.model.UbicacionUi
 import com.galindo.campusgps.viewmodel.MapaViewModel
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberUpdatedMarkerState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -168,40 +161,14 @@ fun PantallaMapa(
                 }
             }
 
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(LatLng(-12.0460, -77.0435), 14.5f)
-            }
-
-            Box(
+            MapaUbicacion(
+                estado = estado,
+                lugares = lugares,
+                seleccionado = seleccionado?.lugar?.id,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
-            ) {
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState
-                ) {
-                    lugares.forEach { lugarDist ->
-                        Marker(
-                            state = rememberUpdatedMarkerState(
-                                position = LatLng(lugarDist.lugar.latitud, lugarDist.lugar.longitud)
-                            ),
-                            title = lugarDist.lugar.nombre,
-                            snippet = lugarDist.lugar.categoria + (lugarDist.metros?.let { " - ${it.toInt()}m" } ?: "")
-                        )
-                    }
-
-                    if (estado is UbicacionUi.Lista) {
-                        val pos = (estado as UbicacionUi.Lista).posicion
-                        Marker(
-                            state = rememberUpdatedMarkerState(
-                                position = LatLng(pos.latitud, pos.longitud)
-                            ),
-                            title = "Mi Ubicación"
-                        )
-                    }
-                }
-            }
+                    .weight(1f)
+            )
 
             Text(
                 text = "Lugares del Campus",
@@ -211,7 +178,9 @@ fun PantallaMapa(
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
                 items(lugares) { lugarDist ->
                     ItemLugar(
