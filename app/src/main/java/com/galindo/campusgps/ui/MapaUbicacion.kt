@@ -25,7 +25,7 @@ fun MapaUbicacion(
     modifier: Modifier = Modifier
 ) {
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(-12.0464, -77.0428), 12f)
+        position = CameraPosition.fromLatLngZoom(LatLng(-12.0432, -76.9531), 16.5f)
     }
 
     LaunchedEffect(estado) {

@@ -171,10 +171,9 @@ fun PantallaMapa(
                     }
                 }
                 is UbicacionUi.Error -> {
-                    Text(
-                        text = actualState.mensaje,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium
+                    MensajeError(
+                        error = actualState,
+                        onReintentar = { alPulsar() }
                     )
                 }
             }

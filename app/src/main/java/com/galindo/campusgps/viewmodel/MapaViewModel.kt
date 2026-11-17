@@ -7,6 +7,7 @@ import com.galindo.campusgps.data.UbicacionRepository
 import com.galindo.campusgps.model.Lugar
 import com.galindo.campusgps.model.LugarConDistancia
 import com.galindo.campusgps.model.Posicion
+import com.galindo.campusgps.model.TipoError
 import com.galindo.campusgps.model.UbicacionUi
 import com.galindo.campusgps.util.distanciaMetros
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,6 +54,14 @@ class MapaViewModel(
     }
 
     fun buscar() {
+        if (!ubicacionRepository.playServicesDisponible()) {
+            _estado.value = UbicacionUi.Error(
+                mensaje = "Este dispositivo no tiene Google Play Services",
+                tipo = TipoError.SIN_PLAY_SERVICES
+            )
+            return
+        }
+
         _estado.value = UbicacionUi.Buscando
         viewModelScope.launch {
             val result = ubicacionRepository.obtenerPosicion()
@@ -60,13 +69,31 @@ class MapaViewModel(
                 _estado.value = UbicacionUi.Lista(posicion)
                 actualizarDistancias(posicion)
             }.onFailure { exception ->
-                _estado.value = UbicacionUi.Error(exception.message ?: "Error al obtener la ubicación.")
+                _estado.value = mensajeDe(exception)
             }
         }
     }
 
     fun permisoDenegado() {
-        _estado.value = UbicacionUi.Error("Permiso de ubicación denegado")
+        _estado.value = UbicacionUi.Error(
+            mensaje = "Permiso de ubicación denegado",
+            tipo = TipoError.SIN_PERMISO
+        )
+    }
+
+    private fun mensajeDe(e: Throwable): UbicacionUi.Error {
+        val msg = e.message ?: ""
+        return if (msg.contains("GPS", ignoreCase = true) || msg.contains("apagado", ignoreCase = true)) {
+            UbicacionUi.Error(
+                mensaje = "No se pudo obtener la ubicación. Activa el GPS e intenta de nuevo",
+                tipo = TipoError.GPS_APAGADO
+            )
+        } else {
+            UbicacionUi.Error(
+                mensaje = e.message ?: "Error al obtener la ubicación.",
+                tipo = TipoError.OTRO
+            )
+        }
     }
 
     private fun actualizarDistancias(pos: Posicion) {

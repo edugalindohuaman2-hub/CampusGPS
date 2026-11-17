@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PantallaMapa(viewModel = mapaViewModel)
+                    PantallaMapa(vm = mapaViewModel)
                 }
             }
         }

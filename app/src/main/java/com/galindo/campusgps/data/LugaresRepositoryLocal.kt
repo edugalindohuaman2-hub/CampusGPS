@@ -5,11 +5,11 @@ import com.galindo.campusgps.model.Lugar
 class LugaresRepositoryLocal : LugaresRepository {
     override fun obtenerLugares(): List<Lugar> {
         return listOf(
-            Lugar(1, "Biblioteca Central", "Estudio", -12.0460, -77.0435),
-            Lugar(2, "Cafetería Campus", "Comida", -12.0470, -77.0420),
-            Lugar(3, "Laboratorio de Cómputo", "Estudio", -12.0455, -77.0415),
-            Lugar(4, "Auditorio Principal", "Eventos", -12.0480, -77.0440),
-            Lugar(5, "Estacionamiento Norte", "Servicios", -12.0440, -77.0430)
+            Lugar(1, "Biblioteca Tecsup", "Estudio", -12.0427, -76.9527),
+            Lugar(2, "Cafetería Tecsup", "Comida", -12.0435, -76.9528),
+            Lugar(3, "Cancha de deporte", "Deporte", -12.0429, -76.9533),
+            Lugar(4, "Auditorio Tecsup", "Eventos", -12.0438, -76.9535),
+            Lugar(5, "Estacionamiento Tecsup", "Servicios", -12.0440, -76.9530)
         )
     }
 }
