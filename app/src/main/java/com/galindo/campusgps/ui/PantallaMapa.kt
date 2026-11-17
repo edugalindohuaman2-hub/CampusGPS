@@ -55,6 +55,16 @@ fun PantallaMapa(
     val seleccionado by vm.seleccionado.collectAsState()
     val masCercano by vm.masCercano.collectAsState()
 
+    val tieneFine = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    val tieneCoarse = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    val tienePermiso = tieneFine || tieneCoarse
+
     val lanzador = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permisos ->
@@ -66,16 +76,7 @@ fun PantallaMapa(
     }
 
     fun alPulsar() {
-        val tieneFine = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        val tieneCoarse = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        if (tieneFine || tieneCoarse) {
+        if (tienePermiso) {
             vm.buscar()
         } else {
             lanzador.launch(
@@ -214,6 +215,7 @@ fun PantallaMapa(
                 lugares = lugaresFiltrados,
                 seleccionado = seleccionado,
                 masCercano = masCercano,
+                tienePermiso = tienePermiso,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
