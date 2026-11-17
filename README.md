@@ -4,6 +4,14 @@
 
 ---
 
+## Capturas de Pantalla
+
+| Mapa Inicial | Ubicación y Más Cercano | Marcador Seleccionado |
+| :---: | :---: | :---: |
+| ![Mapa Inicial](capturas/mapa_inicial.png) | ![Ubicación y Más Cercano](capturas/ubicacion_actual.png) | ![Marcador Seleccionado](capturas/marcador_seleccionado.png) |
+
+---
+
 ## Estratificación de Paquetes (`com.galindo.campusgps`)
 
 ```text
@@ -61,16 +69,6 @@ com.galindo.campusgps
 |     [ FusedLocationProviderClient ]     |       [ Colección de Lugares ] |
 +-------------------------------------------------------------------------+
 ```
-
----
-
-## Capturas de Prueba
-
-- [Permiso de Ubicación](capturas/permiso.png)
-- [Mapa Inicial](capturas/mapa.png)
-- [Marcadores Personalizados](capturas/marcadores.png)
-- [Lista de Lugares y Distancias](capturas/lista.png)
-- [Manejo de Errores](capturas/error.png)
 
 ---
 
