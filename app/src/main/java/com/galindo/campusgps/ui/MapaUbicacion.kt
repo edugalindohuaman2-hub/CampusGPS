@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.galindo.campusgps.model.Lugar
 import com.galindo.campusgps.model.LugarConDistancia
 import com.galindo.campusgps.model.UbicacionUi
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -25,7 +27,8 @@ fun MapaUbicacion(
     seleccionado: Int?,
     masCercano: Lugar?,
     modifier: Modifier = Modifier,
-    tienePermiso: Boolean = false
+    tienePermiso: Boolean = false,
+    radioMetros: Float = 200f
 ) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(-12.0432, -76.9531), 16.5f)
@@ -76,9 +79,18 @@ fun MapaUbicacion(
         }
 
         if (estado is UbicacionUi.Lista) {
+            val centro = LatLng(estado.posicion.latitud, estado.posicion.longitud)
+            Circle(
+                center = centro,
+                radius = radioMetros.toDouble(),
+                fillColor = Color(0x331976D2),
+                strokeColor = Color(0xFF1976D2),
+                strokeWidth = 2f
+            )
+
             Marker(
                 state = rememberUpdatedMarkerState(
-                    position = LatLng(estado.posicion.latitud, estado.posicion.longitud)
+                    position = centro
                 ),
                 title = "Estás aquí"
             )

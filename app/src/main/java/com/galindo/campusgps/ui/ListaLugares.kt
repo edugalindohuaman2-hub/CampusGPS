@@ -31,7 +31,8 @@ fun ListaLugares(
     lugares: List<LugarConDistancia>,
     seleccionado: Int?,
     onClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    radioMetros: Float = 200f
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -42,20 +43,23 @@ fun ListaLugares(
             key = { it.lugar.id }
         ) { item ->
             val isSelected = item.lugar.id == seleccionado
+            val enRadio = item.metros != null && item.metros <= radioMetros
 
             Card(
                 onClick = { onClick(item.lugar.id) },
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isSelected) {
-                        MaterialTheme.colorScheme.primaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = when {
+                        isSelected -> MaterialTheme.colorScheme.primaryContainer
+                        enRadio -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
+                        else -> MaterialTheme.colorScheme.surfaceVariant
                     }
                 ),
-                border = if (isSelected) {
-                    BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-                } else null
+                border = when {
+                    isSelected -> BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                    enRadio -> BorderStroke(1.dp, Color(0xFF4CAF50))
+                    else -> null
+                }
             ) {
                 Row(
                     modifier = Modifier
@@ -74,16 +78,32 @@ fun ListaLugares(
                                 .size(12.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    if (isSelected) MaterialTheme.colorScheme.primary
-                                    else Color(0xFF1976D2)
+                                    when {
+                                        isSelected -> MaterialTheme.colorScheme.primary
+                                        enRadio -> Color(0xFF4CAF50)
+                                        else -> Color(0xFF1976D2)
+                                    }
                                 )
                         )
                         Column {
-                            Text(
-                                text = item.lugar.nombre,
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = item.lugar.nombre,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                if (enRadio) {
+                                    Text(
+                                        text = "• En radio",
+                                        color = Color(0xFF4CAF50),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
                             Text(
                                 text = item.lugar.categoria,
                                 color = Color.Gray,
@@ -94,7 +114,7 @@ fun ListaLugares(
                     Text(
                         text = item.metros?.let { formatearDistancia(it) } ?: "Sin calcular",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        color = if (enRadio) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary
                     )
                 }
             }

@@ -33,6 +33,9 @@ class MapaViewModel(
     private val _categoriaSeleccionada = MutableStateFlow<String?>(null)
     val categoriaSeleccionada: StateFlow<String?> = _categoriaSeleccionada.asStateFlow()
 
+    private val _radioMetros = MutableStateFlow<Float>(200f)
+    val radioMetros: StateFlow<Float> = _radioMetros.asStateFlow()
+
     val lugaresFiltrados: StateFlow<List<LugarConDistancia>> = combine(lugares, categoriaSeleccionada) { lista, cat ->
         if (cat == null || cat == "Todas") {
             lista
@@ -63,6 +66,10 @@ class MapaViewModel(
     private fun cargarLugaresIniciales() {
         val listaLugares = lugaresRepository.obtenerLugares()
         _lugares.value = listaLugares.map { LugarConDistancia(it, null) }
+    }
+
+    fun cambiarRadio(metros: Float) {
+        _radioMetros.value = metros
     }
 
     fun filtrarPorCategoria(categoria: String?) {

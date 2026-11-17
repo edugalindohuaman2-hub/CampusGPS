@@ -52,6 +52,7 @@ fun PantallaMapa(
     val lugares by vm.lugares.collectAsState()
     val lugaresFiltrados by vm.lugaresFiltrados.collectAsState()
     val categoriaSeleccionada by vm.categoriaSeleccionada.collectAsState()
+    val radioMetros by vm.radioMetros.collectAsState()
     val seleccionado by vm.seleccionado.collectAsState()
     val masCercano by vm.masCercano.collectAsState()
 
@@ -210,12 +211,30 @@ fun PantallaMapa(
                 }
             }
 
+            val radios = listOf(100f to "100 m", 200f to "200 m", 500f to "500 m")
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Radio:", style = MaterialTheme.typography.bodyMedium)
+                radios.forEach { (valor, etiqueta) ->
+                    FilterChip(
+                        selected = radioMetros == valor,
+                        onClick = { vm.cambiarRadio(valor) },
+                        label = { Text(etiqueta) }
+                    )
+                }
+            }
+
             MapaUbicacion(
                 estado = estado,
                 lugares = lugaresFiltrados,
                 seleccionado = seleccionado,
                 masCercano = masCercano,
                 tienePermiso = tienePermiso,
+                radioMetros = radioMetros,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -231,6 +250,7 @@ fun PantallaMapa(
                 lugares = lugaresFiltrados,
                 seleccionado = seleccionado,
                 onClick = { id -> vm.seleccionar(id) },
+                radioMetros = radioMetros,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(220.dp)
