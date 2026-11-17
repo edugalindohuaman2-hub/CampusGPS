@@ -105,27 +105,32 @@ fun PantallaMapa(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Button(
-                onClick = { alPulsar() },
-                enabled = estado !is UbicacionUi.Buscando,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF1976D2)
-                )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Obtener mi ubicación")
-            }
+                Button(
+                    onClick = { alPulsar() },
+                    enabled = estado !is UbicacionUi.Buscando,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1976D2)
+                    )
+                ) {
+                    Text("Obtener mi ubicación")
+                }
 
-            OutlinedButton(
-                onClick = {
-                    masCercano?.let { vm.seleccionar(it.id) }
-                },
-                enabled = masCercano != null
-            ) {
-                Text("Ir al más cercano")
+                OutlinedButton(
+                    onClick = {
+                        masCercano?.let { vm.seleccionar(it.id) }
+                    },
+                    enabled = masCercano != null
+                ) {
+                    Text("Ir al más cercano")
+                }
             }
 
             if (masCercano != null) {
@@ -160,19 +165,15 @@ fun PantallaMapa(
                         ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column(modifier = Modifier.padding(12.dp)) {
                             Text(
                                 text = "Ubicación Actual:",
                                 style = MaterialTheme.typography.titleMedium
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Latitud: ${actualState.posicion.latitud}",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = "Longitud: ${actualState.posicion.longitud}",
-                                style = MaterialTheme.typography.bodyLarge
+                                text = "Lat: ${actualState.posicion.latitud} | Lon: ${actualState.posicion.longitud}",
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }
@@ -237,7 +238,7 @@ fun PantallaMapa(
                 radioMetros = radioMetros,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(2f)
             )
 
             Text(
@@ -253,7 +254,7 @@ fun PantallaMapa(
                 radioMetros = radioMetros,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
+                    .height(170.dp)
             )
         }
     }

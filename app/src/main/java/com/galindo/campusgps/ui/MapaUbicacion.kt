@@ -1,5 +1,7 @@
 package com.galindo.campusgps.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
@@ -55,45 +57,47 @@ fun MapaUbicacion(
         }
     }
 
-    GoogleMap(
-        modifier = modifier,
-        cameraPositionState = cameraPositionState,
-        properties = MapProperties(isMyLocationEnabled = tienePermiso),
-        uiSettings = MapUiSettings(myLocationButtonEnabled = tienePermiso)
-    ) {
-        lugares.forEach { item ->
-            key(item.lugar.id) {
-                val esMasCercano = item.lugar.id == masCercano?.id
+    Box(modifier = modifier) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(isMyLocationEnabled = tienePermiso),
+            uiSettings = MapUiSettings(myLocationButtonEnabled = tienePermiso)
+        ) {
+            lugares.forEach { item ->
+                key(item.lugar.id) {
+                    val esMasCercano = item.lugar.id == masCercano?.id
+                    Marker(
+                        state = rememberUpdatedMarkerState(
+                            position = LatLng(item.lugar.latitud, item.lugar.longitud)
+                        ),
+                        title = item.lugar.nombre,
+                        snippet = item.lugar.categoria,
+                        icon = BitmapDescriptorFactory.defaultMarker(
+                            if (esMasCercano) BitmapDescriptorFactory.HUE_GREEN
+                            else BitmapDescriptorFactory.HUE_AZURE
+                        )
+                    )
+                }
+            }
+
+            if (estado is UbicacionUi.Lista) {
+                val centro = LatLng(estado.posicion.latitud, estado.posicion.longitud)
+                Circle(
+                    center = centro,
+                    radius = radioMetros.toDouble(),
+                    fillColor = Color(0x331976D2),
+                    strokeColor = Color(0xFF1976D2),
+                    strokeWidth = 2f
+                )
+
                 Marker(
                     state = rememberUpdatedMarkerState(
-                        position = LatLng(item.lugar.latitud, item.lugar.longitud)
+                        position = centro
                     ),
-                    title = item.lugar.nombre,
-                    snippet = item.lugar.categoria,
-                    icon = BitmapDescriptorFactory.defaultMarker(
-                        if (esMasCercano) BitmapDescriptorFactory.HUE_GREEN
-                        else BitmapDescriptorFactory.HUE_AZURE
-                    )
+                    title = "Estás aquí"
                 )
             }
-        }
-
-        if (estado is UbicacionUi.Lista) {
-            val centro = LatLng(estado.posicion.latitud, estado.posicion.longitud)
-            Circle(
-                center = centro,
-                radius = radioMetros.toDouble(),
-                fillColor = Color(0x331976D2),
-                strokeColor = Color(0xFF1976D2),
-                strokeWidth = 2f
-            )
-
-            Marker(
-                state = rememberUpdatedMarkerState(
-                    position = centro
-                ),
-                title = "Estás aquí"
-            )
         }
     }
 }
