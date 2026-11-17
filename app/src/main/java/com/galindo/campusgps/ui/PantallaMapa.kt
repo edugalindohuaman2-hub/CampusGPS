@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -47,6 +50,8 @@ fun PantallaMapa(
     val context = LocalContext.current
     val estado by vm.estado.collectAsState()
     val lugares by vm.lugares.collectAsState()
+    val lugaresFiltrados by vm.lugaresFiltrados.collectAsState()
+    val categoriaSeleccionada by vm.categoriaSeleccionada.collectAsState()
     val seleccionado by vm.seleccionado.collectAsState()
     val masCercano by vm.masCercano.collectAsState()
 
@@ -178,9 +183,35 @@ fun PantallaMapa(
                 }
             }
 
+            val categorias = listOf("Todas", "Estudio", "Comida", "Eventos", "Servicios")
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(categorias) { cat ->
+                    val esSeleccionada = if (cat == "Todas") {
+                        categoriaSeleccionada == null
+                    } else {
+                        categoriaSeleccionada.equals(cat, ignoreCase = true)
+                    }
+                    FilterChip(
+                        selected = esSeleccionada,
+                        onClick = {
+                            if (cat == "Todas") {
+                                vm.filtrarPorCategoria(null)
+                            } else {
+                                vm.filtrarPorCategoria(if (esSeleccionada) null else cat)
+                            }
+                        },
+                        label = { Text(cat) }
+                    )
+                }
+            }
+
             MapaUbicacion(
                 estado = estado,
-                lugares = lugares,
+                lugares = lugaresFiltrados,
                 seleccionado = seleccionado,
                 masCercano = masCercano,
                 modifier = Modifier
@@ -195,7 +226,7 @@ fun PantallaMapa(
             )
 
             ListaLugares(
-                lugares = lugares,
+                lugares = lugaresFiltrados,
                 seleccionado = seleccionado,
                 onClick = { id -> vm.seleccionar(id) },
                 modifier = Modifier
