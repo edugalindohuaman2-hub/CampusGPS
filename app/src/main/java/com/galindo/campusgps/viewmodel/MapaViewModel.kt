@@ -1,6 +1,5 @@
 package com.galindo.campusgps.viewmodel
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.galindo.campusgps.data.LugaresRepository
@@ -8,6 +7,7 @@ import com.galindo.campusgps.data.UbicacionRepository
 import com.galindo.campusgps.model.LugarConDistancia
 import com.galindo.campusgps.model.Posicion
 import com.galindo.campusgps.model.UbicacionUi
+import com.galindo.campusgps.util.distanciaMetros
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,17 +57,10 @@ class MapaViewModel(
         _estado.value = UbicacionUi.Error("Permiso de ubicación denegado")
     }
 
-    private fun actualizarDistancias(posicion: Posicion) {
-        val listaLugares = lugaresRepository.obtenerLugares()
-        _lugares.value = listaLugares.map { lugar ->
-            val dist = calcularDistancia(posicion.latitud, posicion.longitud, lugar.latitud, lugar.longitud)
-            LugarConDistancia(lugar, dist)
-        }
-    }
-
-    private fun calcularDistancia(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
-        val results = FloatArray(1)
-        Location.distanceBetween(lat1, lon1, lat2, lon2, results)
-        return results[0]
+    private fun actualizarDistancias(pos: Posicion) {
+        val listaOrdenada = lugaresRepository.obtenerLugares().map { lugar ->
+            LugarConDistancia(lugar, distanciaMetros(pos, lugar))
+        }.sortedBy { it.metros }
+        _lugares.value = listaOrdenada
     }
 }
