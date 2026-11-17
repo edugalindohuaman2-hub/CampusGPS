@@ -24,8 +24,8 @@ class MapaViewModel(
     private val _lugares = MutableStateFlow<List<LugarConDistancia>>(emptyList())
     val lugares: StateFlow<List<LugarConDistancia>> = _lugares.asStateFlow()
 
-    private val _seleccionado = MutableStateFlow<LugarConDistancia?>(null)
-    val seleccionado: StateFlow<LugarConDistancia?> = _seleccionado.asStateFlow()
+    private val _seleccionado = MutableStateFlow<Int?>(null)
+    val seleccionado: StateFlow<Int?> = _seleccionado.asStateFlow()
 
     init {
         cargarLugaresIniciales()
@@ -36,8 +36,8 @@ class MapaViewModel(
         _lugares.value = listaLugares.map { LugarConDistancia(it, null) }
     }
 
-    fun seleccionarLugar(lugar: LugarConDistancia?) {
-        _seleccionado.value = lugar
+    fun seleccionar(id: Int?) {
+        _seleccionado.value = id
     }
 
     fun buscar() {

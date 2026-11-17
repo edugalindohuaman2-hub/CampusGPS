@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.galindo.campusgps.model.LugarConDistancia
 import com.galindo.campusgps.model.UbicacionUi
 import com.galindo.campusgps.viewmodel.MapaViewModel
 
@@ -164,7 +161,7 @@ fun PantallaMapa(
             MapaUbicacion(
                 estado = estado,
                 lugares = lugares,
-                seleccionado = seleccionado?.lugar?.id,
+                seleccionado = seleccionado,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -176,61 +173,14 @@ fun PantallaMapa(
                 modifier = Modifier.align(Alignment.Start)
             )
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ListaLugares(
+                lugares = lugares,
+                seleccionado = seleccionado,
+                onClick = { id -> vm.seleccionar(id) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                items(lugares) { lugarDist ->
-                    ItemLugar(
-                        lugarDist = lugarDist,
-                        isSelected = seleccionado == lugarDist,
-                        onClick = { vm.seleccionarLugar(lugarDist) }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ItemLugar(
-    lugarDist: LugarConDistancia,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = lugarDist.lugar.nombre,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "Categoría: ${lugarDist.lugar.categoria}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-            if (lugarDist.metros != null) {
-                Text(
-                    text = "${lugarDist.metros.toInt()} m",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+                    .height(220.dp)
+            )
         }
     }
 }

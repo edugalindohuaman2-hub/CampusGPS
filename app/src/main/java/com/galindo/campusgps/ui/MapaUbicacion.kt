@@ -35,6 +35,18 @@ fun MapaUbicacion(
         }
     }
 
+    LaunchedEffect(seleccionado) {
+        if (seleccionado != null) {
+            val lugarSel = lugares.firstOrNull { it.lugar.id == seleccionado }
+            if (lugarSel != null) {
+                val coords = LatLng(lugarSel.lugar.latitud, lugarSel.lugar.longitud)
+                cameraPositionState.animate(
+                    CameraUpdateFactory.newLatLngZoom(coords, 17f)
+                )
+            }
+        }
+    }
+
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState
